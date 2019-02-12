@@ -27,9 +27,10 @@ int main(char* argc, int argv)
 	int source = 0;
 	int dest = 0;
 	int weight = 0;
+	int step = 0;
 	
-	int total_distance = 0;
-	int temp_distance = 0;
+	int iArr_distance[NODE_COUNT] = {INF};
+	//int temp_distance = 0;
 	
 	int user_src = 0;
 	int user_dst = 0;
@@ -56,11 +57,14 @@ int main(char* argc, int argv)
 	dest = 0;
 	weight = 0;
 	
-	matrix[source][source] = 0;
+	
 	
 	//user_string = argc;
 	user_src = atoi(&argc[0]) -1;/*adjusting for actual numeric index*/
 	user_dst = atoi(&argc[2]) -1;
+	
+	matrix[user_src][user_src] = 0;	
+	iArr_distance[user_src] = 0;
 	
 	enq_main(user_src);
 	/*Not worrying about catching invalid user input right now.*/
@@ -71,28 +75,24 @@ int main(char* argc, int argv)
 		//if(source == dest)
 		//	break;
 			
-		temp_distance = INF;
+		//temp_distance = INF;
 		for(dest = 0; dest < NODE_COUNT; dest++)
 		{
-			if(matrix[source][dest] != INF)
-			{
-				if(visited[dest] == 'F')
+			if((matrix[source][dest] != INF) && (visited[dest] == 'F'))
+			{	
+				step = matrix[source][dest] + iArr_distance[source];
+				if(step <= iArr_distance[dest])
 				{
-					//enq_main(dest);
-					
-					if(matrix[source][dest] <= temp_distance)
-					{
-						temp_distance = matrix[source][dest];
-						vertex.src = source;
-						vertex.dst = dest;
-						enq_main(dest);
-					}				
+					iArr_distance[dest] = step;
+					vertex.src = source;
+					vertex.dst = dest;
+					enq_main(dest);
+				}				
 					//visited[dest] = 'T';
-				}
 			}		
 		}
 		visited[source] = 'T';
-		total_distance += temp_distance;
+		//iArr_distance[vertex.dst] += temp_distance;
 		enq_path(vertex);
 	}
 	
