@@ -28,12 +28,14 @@ int main(char* argc, int argv)
 	int dest = 0;
 	int weight = 0;
 	
-	int iArr_distance[NODE_COUNT] = {0};
+	int total_distance = 0;
 	int temp_distance = 0;
 	
 	int user_src = 0;
 	int user_dst = 0;
-	//int start = 0;
+	
+	if(user_src == user_dst)
+		goto Finish;
 	
 	ptr = fopen("input.txt", "r");
 	
@@ -66,6 +68,9 @@ int main(char* argc, int argv)
 	while(queue != NULL)/*Visiting neighbors*/
 	{
 		source = deq_main();
+		if(source == dest)
+			break;
+			
 		temp_distance = INF;
 		for(;dest < NODE_COUNT; dest++)
 		{
@@ -85,11 +90,13 @@ int main(char* argc, int argv)
 				}
 			}		
 		}
-		iArr_distance[vertex.dst] += temp_distance;
-		if(
-			enq_path(vertex);
+		total_distance += temp_distance;
+		enq_path(vertex);
 	}
 	
+
+Finish:
+
 	
 	
 /*
