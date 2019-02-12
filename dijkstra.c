@@ -45,9 +45,9 @@ int main(char* argc, int argv)
 	{
 		fgets(int_string, 5, ptr);
 		
-		source = atoi(&int_string[0]);
-		dest = atoi(&int_string[2]);
-		weight = atoi(&int_string[4]);
+		source = atoi(&int_string[0]) -1;/*adjusting for actual numeric index*/
+		dest = atoi(&int_string[2]) -1;
+		weight = atoi(&int_string[4]) -1;
 		
 		matrix[source][dest] = weight;
 	}
@@ -59,8 +59,8 @@ int main(char* argc, int argv)
 	matrix[source][source] = 0;
 	
 	//user_string = argc;
-	user_src = atoi(&argc[0]);
-	user_dst = atoi(&argc[2]);
+	user_src = atoi(&argc[0]) -1;/*adjusting for actual numeric index*/
+	user_dst = atoi(&argc[2]) -1;
 	
 	enq_main(user_src);
 	/*Not worrying about catching invalid user input right now.*/
@@ -68,28 +68,30 @@ int main(char* argc, int argv)
 	while(queue != NULL)/*Visiting neighbors*/
 	{
 		source = deq_main();
-		if(source == dest)
-			break;
+		//if(source == dest)
+		//	break;
 			
 		temp_distance = INF;
-		for(;dest < NODE_COUNT; dest++)
+		for(dest = 0; dest < NODE_COUNT; dest++)
 		{
 			if(matrix[source][dest] != INF)
 			{
 				if(visited[dest] == 'F')
 				{
-					enq_main(dest);
+					//enq_main(dest);
 					
-					if(matrix[source][dest] < temp_distance)
+					if(matrix[source][dest] <= temp_distance)
 					{
 						temp_distance = matrix[source][dest];
 						vertex.src = source;
 						vertex.dst = dest;
+						enq_main(dest);
 					}				
-					visited[dest] = 'T';
+					//visited[dest] = 'T';
 				}
 			}		
 		}
+		visited[source] = 'T';
 		total_distance += temp_distance;
 		enq_path(vertex);
 	}
