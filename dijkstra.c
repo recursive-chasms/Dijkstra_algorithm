@@ -4,18 +4,36 @@
 
 #define NODE_COUNT 7
 #define EDGE_COUNT 12
+#define INF -1
 
-int main()
+struct vertex
+{
+	int src;
+	int dst;
+};
+typedef struct vertex vertex;
+
+
+int main(char* argc, int argv)
 {	
-	int matrix[NODE_COUNT][NODE_COUNT];
+	int matrix[NODE_COUNT][NODE_COUNT] = {INF};
+	char visited[NODE_COUNT] = {'F'};
 	FILE* ptr;
 	char int_string[5];
-	char c;
+	//char user_string[5];
+	//char c;
 	
 	int index = 0;
 	int source = 0;
 	int dest = 0;
 	int weight = 0;
+	
+	int iArr_distance[NODE_COUNT] = {0};
+	int temp_distance = 0;
+	
+	int user_src = 0;
+	int user_dst = 0;
+	//int start = 0;
 	
 	ptr = fopen("input.txt", "r");
 	
@@ -31,12 +49,55 @@ int main()
 		
 		matrix[source][dest] = weight;
 	}
+	index = 0;
+	source = 0;
+	dest = 0;
+	weight = 0;
+	
+	matrix[source][source] = 0;
+	
+	//user_string = argc;
+	user_src = atoi(&argc[0]);
+	user_dst = atoi(&argc[2]);
+	
+	enq_main(user_src);
+	/*Not worrying about catching invalid user input right now.*/
+	//enq_main(source);
+	while(queue != NULL)/*Visiting neighbors*/
+	{
+		source = deq_main();
+		temp_distance = INF;
+		for(;dest < NODE_COUNT; dest++)
+		{
+			if(matrix[source][dest] != INF)
+			{
+				if(visited[dest] == 'F')
+				{
+					enq_main(dest);
+					
+					if(matrix[source][dest] < temp_distance)
+					{
+						temp_distance = matrix[source][dest];
+						vertex.src = source;
+						vertex.dst = dest;
+					}				
+					visited[dest] = 'T';
+				}
+			}		
+		}
+		iArr_distance[vertex.dst] += temp_distance;
+		if(
+			enq_path(vertex);
+	}
+	
+	
+	
 /*
 NOTES:
 
 Ought to be able to replicate Dijkstra search much more cleanly using the queue library. The one tricky part may be keeping a queue of pointers to the previous edges in the path for printing the shortest path. 
 
-Just visit all the neighbors in a BFS style thing. Enqueue them all, and consult with an array to see whether they've already been visited. A simple check to see which is the shortest path. String together pointers of shortest paths simultaneously. 
+Just visit all the neighbors in a BFS style thing. enq_mainueue them all, and consult with an array to see whether they've already been visited. A simple check to see which is the shortest path. String together pointers of shortest paths simultaneously. 
 
 
 */	
