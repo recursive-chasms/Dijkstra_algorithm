@@ -6,15 +6,23 @@
 #define EDGE_COUNT 12
 #define INF -1
 
-struct vertex
+struct path_struct
 {
 	int src;
 	int dst;
+	STAILQ_ENTRY(path_struct) path_vertices;
 };
-typedef struct vertex vertex;
+typedef struct path_struct path_struct;
+
+struct neighbor_struct 
+{	
+	int i;
+	STAILQ_ENTRY(neighbor_struct) neighbors;
+};
+typedef struct neighbor_struct neighbor_struct;
 
 
-int main(char* argc, int argv)
+int main(int arc, char * argv [])
 {	
 	int matrix[NODE_COUNT][NODE_COUNT] = {INF};
 	char visited[NODE_COUNT] = {'F'};
@@ -22,6 +30,12 @@ int main(char* argc, int argv)
 	char int_string[5];
 	//char user_string[5];
 	//char c;
+	
+	STAILQ_HEAD(stailhead, neighbor_struct) neighbor_head = STAILQ_HEAD_INITIALIZER(neighbor_head);
+	STAILQ_HEAD(stailhead_p, path_struct) path_head = STAILQ_HEAD_INITIALIZER(path_head);
+	
+	STAILQ_INIT(&neighbor_head);
+	STAILQ_INIT(&path_head);
 	
 	int index = 0;
 	int source = 0;
@@ -60,22 +74,33 @@ int main(char* argc, int argv)
 	
 	
 	//user_string = argc;
-	user_src = atoi(&argc[0]) -1;/*adjusting for actual numeric index*/
-	user_dst = atoi(&argc[2]) -1;
+	user_src = atoi(&argv[0]) -1;/*adjusting for actual numeric index*/
+	user_dst = atoi(&argv[2]) -1;
 	
 	matrix[user_src][user_src] = 0;	
 	iArr_distance[user_src] = 0;
 	
-	enq_main(user_src);
+	path_struct* path_node = NULL;
+	neighbor_struct* neighbor_node = NULL;
+	neighbor_node = malloc(sizeof(neighbor_struct));
+	neighbor_node->i = user_src;
+	STAILQ_INSERT_HEAD(&neighbor_head, neighbor_node, neighbors));
+	//enq_main(user_src);
 	/*Not worrying about catching invalid user input right now.*/
 	//enq_main(source);
-	while(queue != NULL)/*Visiting neighbors*/
+	while(!STAILQ_EMPTY(&neighbor_head))/*Visiting neighbors*/
 	{
-		source = deq_main();
+		//source = deq_main();
 		//if(source == dest)
 		//	break;
 			
 		//temp_distance = INF;
+		
+		neighbor_node = STAILQ_FIRST(&neighbor_head);
+		STAILQ_REMOVE_HEAD(&neighbor_head, neighbors);
+		source = neighbor_node->i;
+		free(neighbor_node);
+		neighbor_node = NULL;
 		for(dest = 0; dest < NODE_COUNT; dest++)
 		{
 			if((matrix[source][dest] != INF) && (visited[dest] == 'F'))
@@ -86,14 +111,18 @@ int main(char* argc, int argv)
 					iArr_distance[dest] = step;
 					vertex.src = source;
 					vertex.dst = dest;
-					enq_main(dest);
+					neighbor_node = malloc(sizeof(neighbor_struct));
+					neighbor_node->i = dest;
+					STAILQ_INSERT_TAIL(&neighbor_head, neighbor_node, neighbors))
+					//enq_main(dest);
 				}				
 					//visited[dest] = 'T';
 			}		
 		}
 		visited[source] = 'T';
 		//iArr_distance[vertex.dst] += temp_distance;
-		enq_path(vertex);
+		//enq_path(vertex);
+		path_node = malloc(sizeof(path_struct));
 	}
 	
 
