@@ -81,6 +81,7 @@ int main(int arc, char * argv [])
 	iArr_distance[user_src] = 0;
 	
 	path_struct* path_node = NULL;
+	//path_struct* tmp_node = NULL;
 	neighbor_struct* neighbor_node = NULL;
 	neighbor_node = malloc(sizeof(neighbor_struct));
 	neighbor_node->i = user_src;
@@ -109,11 +110,22 @@ int main(int arc, char * argv [])
 				if(step <= iArr_distance[dest])
 				{
 					iArr_distance[dest] = step;
-					vertex.src = source;
-					vertex.dst = dest;
+					
 					neighbor_node = malloc(sizeof(neighbor_struct));
 					neighbor_node->i = dest;
 					STAILQ_INSERT_TAIL(&neighbor_head, neighbor_node, neighbors))
+					
+					if(iArr_distance[dest] == INF)
+					{
+						path_node = malloc(sizeof(path_struct));
+						STAILQ_INSERT_HEAD(&path_head, path_node, path_vertices);
+					}
+					else
+						path_node = STAILQ_FIRST(&path_head);
+						
+					path_node->src = source;
+					path_node->dst = dest;
+										
 					//enq_main(dest);
 				}				
 					//visited[dest] = 'T';
@@ -122,7 +134,6 @@ int main(int arc, char * argv [])
 		visited[source] = 'T';
 		//iArr_distance[vertex.dst] += temp_distance;
 		//enq_path(vertex);
-		path_node = malloc(sizeof(path_struct));
 	}
 	
 
