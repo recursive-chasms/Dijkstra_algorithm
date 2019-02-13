@@ -25,9 +25,9 @@ typedef struct neighbor_struct neighbor_struct;
 int main(int arc, char * argv [])
 {	
 	int matrix[NODE_COUNT][NODE_COUNT] = {INF};
-	char visited[NODE_COUNT] = {'F'};
+	char visited[NODE_COUNT];// = {'F'};
 	FILE* ptr;
-	char int_string[5];
+	char int_string[10];
 	//char user_string[5];
 	//char c;
 	
@@ -43,29 +43,38 @@ int main(int arc, char * argv [])
 	int weight = 0;
 	int step = 0;
 	
-	int iArr_distance[NODE_COUNT] = {INF};
+	int iArr_distance[NODE_COUNT];
+	
+	for(;index < NODE_COUNT; index++)
+	{
+		iArr_distance[index] = INF;	
+		visited[index] = 'F';
+	}
+	
+	
 	//int temp_distance = 0;
 	
 	int user_src = 0;
 	int user_dst = 0;
 	
+	/*
 	if(user_src == user_dst)
 	{
 		printf("ALREADY THERE!\n");
 		goto Finish;
 	}
-	
+	*/
 	ptr = fopen("input.txt", "r");
 	
 	//fread(int_string, EDGE_COUNT, 1, ptr);
 	
 	for(index = 0; index < EDGE_COUNT; index++)
 	{
-		fgets(int_string, 5, ptr);
+		fgets(int_string, 6, ptr);
 		
 		source = atoi(&int_string[0]) -1;/*adjusting for actual numeric index*/
 		dest = atoi(&int_string[2]) -1;
-		weight = atoi(&int_string[4]) -1;
+		weight = atoi(&int_string[4]);
 		
 		matrix[source][dest] = weight;
 	}
@@ -75,8 +84,8 @@ int main(int arc, char * argv [])
 	weight = 0;	
 	
 	//user_string = argc;
-	user_src = atoi(&argv[0]) -1;/*adjusting for actual numeric index*/
-	user_dst = atoi(&argv[2]) -1;
+	user_src = 0;//atoi(argv[0]) -1;/*adjusting for actual numeric index*/
+	user_dst = 5;//atoi(argv[2]) -1;
 	
 	matrix[user_src][user_src] = 0;	
 	iArr_distance[user_src] = 0;
@@ -86,7 +95,7 @@ int main(int arc, char * argv [])
 	neighbor_struct* neighbor_node = NULL;
 	neighbor_node = malloc(sizeof(neighbor_struct));
 	neighbor_node->i = user_src;
-	TAILQ_INSERT_HEAD(&neighbor_head, neighbor_node, neighbors));
+	TAILQ_INSERT_HEAD(&neighbor_head, neighbor_node, neighbors);
 	//enq_main(user_src);
 	/*Not worrying about catching invalid user input right now.*/
 	//enq_main(source);
@@ -99,7 +108,7 @@ int main(int arc, char * argv [])
 		//temp_distance = INF;
 		
 		neighbor_node = TAILQ_FIRST(&neighbor_head);
-		TAILQ_REMOVE_HEAD(&neighbor_head, neighbors);
+		TAILQ_REMOVE(&neighbor_head, neighbor_node, neighbors);
 		source = neighbor_node->i;
 		free(neighbor_node);
 		neighbor_node = NULL;
@@ -114,19 +123,19 @@ int main(int arc, char * argv [])
 					
 					neighbor_node = malloc(sizeof(neighbor_struct));
 					neighbor_node->i = dest;
-					TAILQ_INSERT_TAIL(&neighbor_head, neighbor_node, neighbors))
+					TAILQ_INSERT_TAIL(&neighbor_head, neighbor_node, neighbors);
 					
-					if(iArr_distance[dest] == INF)
+					if(iArr_distance[dest] == INF || iArr_distance[dest] == 0)
 					{
 						path_node = malloc(sizeof(path_struct));
-						TAILQ_INSERT_TAIL(&path_head, path_node, path_vertices);
 					}
 					else
-						path_node = TAILQ_LAST(&path_head);
+						path_node = TAILQ_LAST(&path_head, stailhead_p);
 						
 					path_node->src = source;
 					path_node->dst = dest;
-										
+					
+					TAILQ_INSERT_TAIL(&path_head, path_node, path_vertices);					
 					//enq_main(dest);
 				}				
 					//visited[dest] = 'T';
@@ -138,23 +147,25 @@ int main(int arc, char * argv [])
 	}
 	
 	printf("Distances from starting point to every node:\n");
+	
 	for(index = 0; index < NODE_COUNT; index++)
 		printf("%i -> %i : %i\n", user_src, index, iArr_distance[index]);
 	
 	printf("ROUTE--Start to finish: \n");
+	
 	path_node = TAILQ_FIRST(&path_head);
+	
 	while(!TAILQ_EMPTY(&path_head))
 	{
 		TAILQ_FOREACH(path_node, &path_head, path_vertices)
 		{
 			printf("node: %i | distance: %i \n", path_node->src, matrix[path_node->src][path_node->dst]);
-			TAILQ_REMOVE_HEAD(&path_head, path_vertices);
+			TAILQ_REMOVE(&path_head, path_node, path_vertices);
 			free(path_node);
 		}	
 	}
 
 Finish:
-
 	fclose(ptr);
 
 	return 0;
