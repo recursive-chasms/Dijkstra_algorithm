@@ -122,8 +122,6 @@ int main(int arc, char * argv [])
 				step = matrix[source][dest] + iArr_distance[source];
 				if(step <= iArr_distance[dest])
 				{
-					iArr_distance[dest] = step;
-					
 					neighbor_node = malloc(sizeof(neighbor_struct));
 					neighbor_node->i = dest;
 					TAILQ_INSERT_TAIL(&neighbor_head, neighbor_node, neighbors);
@@ -131,14 +129,17 @@ int main(int arc, char * argv [])
 					if(iArr_distance[dest] == INF || iArr_distance[dest] == 0)
 					{
 						path_node = malloc(sizeof(path_struct));
+						path_node->src = source;
+						path_node->dst = dest;
+						TAILQ_INSERT_TAIL(&path_head, path_node, path_vertices);
 					}
 					else
+					{
 						path_node = TAILQ_LAST(&path_head, stailhead_p);
-						
-					path_node->src = source;
-					path_node->dst = dest;
-					
-					TAILQ_INSERT_TAIL(&path_head, path_node, path_vertices);					
+						path_node->src = source;
+						path_node->dst = dest;		
+					}
+					iArr_distance[dest] = step;					
 					//enq_main(dest);
 				}				
 					//visited[dest] = 'T';
@@ -160,9 +161,9 @@ int main(int arc, char * argv [])
 	
 	while(!TAILQ_EMPTY(&path_head))
 	{
-		TAILQ_FOREACH(path_node, &path_head, path_vertices)
+		TAILQ_FOREACH_REVERSE(path_node, &path_head, stailhead_p, path_vertices)
 		{
-			printf("node: %i | distance: %i \n", path_node->src, matrix[path_node->src][path_node->dst]);
+			printf("%i -> %i | distance: %i \n", path_node->src, path_node->dst, matrix[path_node->src][path_node->dst]);
 			TAILQ_REMOVE(&path_head, path_node, path_vertices);
 			free(path_node);
 		}	
