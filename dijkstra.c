@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <sys/queue.h>
 
-#define NODE_COUNT 7
+#define NODE_COUNT 8  /*<-Increased to represent actual graph*/
 #define EDGE_COUNT 12
-#define INF -1
+#define INF 0x7FFFFFFF
 
 struct path_struct
 {
@@ -24,7 +24,7 @@ typedef struct neighbor_struct neighbor_struct;
 
 int main(int arc, char * argv [])
 {	
-	int matrix[NODE_COUNT][NODE_COUNT] = {INF};
+	int matrix[NODE_COUNT][NODE_COUNT];
 	char visited[NODE_COUNT];// = {'F'};
 	FILE* ptr;
 	char int_string[10];
@@ -38,6 +38,7 @@ int main(int arc, char * argv [])
 	TAILQ_INIT(&path_head);
 	
 	int index = 0;
+	int bindex = 0;
 	int source = 0;
 	int dest = 0;
 	int weight = 0;
@@ -49,6 +50,8 @@ int main(int arc, char * argv [])
 	{
 		iArr_distance[index] = INF;	
 		visited[index] = 'F';
+		for(bindex = 0; bindex < NODE_COUNT; bindex++)
+			matrix[index][bindex] = INF;
 	}
 	
 	
@@ -70,10 +73,10 @@ int main(int arc, char * argv [])
 	
 	for(index = 0; index < EDGE_COUNT; index++)
 	{
-		fgets(int_string, 6, ptr);
+		fgets(int_string, 8, ptr);
 		
-		source = atoi(&int_string[0]) -1;/*adjusting for actual numeric index*/
-		dest = atoi(&int_string[2]) -1;
+		source = atoi(&int_string[0]);/* -1;/*adjusting for actual numeric index*/
+		dest = atoi(&int_string[2]);// -1;
 		weight = atoi(&int_string[4]);
 		
 		matrix[source][dest] = weight;
@@ -84,8 +87,8 @@ int main(int arc, char * argv [])
 	weight = 0;	
 	
 	//user_string = argc;
-	user_src = 0;//atoi(argv[0]) -1;/*adjusting for actual numeric index*/
-	user_dst = 5;//atoi(argv[2]) -1;
+	user_src = 1;//atoi(argv[0]) -1;/*adjusting for actual numeric index*/
+	user_dst = 6;//atoi(argv[2]) -1;
 	
 	matrix[user_src][user_src] = 0;	
 	iArr_distance[user_src] = 0;
