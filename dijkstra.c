@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/queue.h>
+#include <signal.h>
 
 #define NODE_COUNT 8  /*<-Increased to represent actual graph*/
 #define EDGE_COUNT 12
@@ -27,7 +28,7 @@ typedef struct neighbor_struct neighbor_struct;
 int main(int arc, char * argv [])
 {	
 	int matrix[NODE_COUNT][NODE_COUNT];
-	char visited[NODE_COUNT];// = {'F'};
+	char visited[NODE_COUNT][NODE_COUNT];// = {'F'};
 	FILE* ptr;
 	char int_string[10];
 	//char user_string[5];
@@ -43,6 +44,7 @@ int main(int arc, char * argv [])
 	int bindex = 0;
 	int source = 0;
 	int dest = 0;
+	int up_dest = 0;
 	//int final_dest = 0;
 	//int final_distance = 0;
 	int weight = 0;
@@ -54,9 +56,12 @@ int main(int arc, char * argv [])
 	for(;index < NODE_COUNT; index++)
 	{
 		iArr_distance[index] = INF;	
-		visited[index] = 'F';
+		//visited[index] = 'F';
 		for(bindex = 0; bindex < NODE_COUNT; bindex++)
+		{
 			matrix[index][bindex] = INF;
+			visited[index][bindex] = 'F';
+		}
 	}
 	
 	
@@ -76,8 +81,11 @@ int main(int arc, char * argv [])
 	
 	//fread(int_string, EDGE_COUNT, 1, ptr);
 	
-	for(index = 0; index < EDGE_COUNT; index++)
+	for(index = 0; index <= EDGE_COUNT; index++)
 	{
+		//if(index == 11)
+		//	raise(SIGTRAP);
+	
 		fgets(int_string, 8, ptr);
 		
 		source = atoi(&int_string[0]);/* -1;/*adjusting for actual numeric index*/
@@ -97,7 +105,7 @@ int main(int arc, char * argv [])
 	
 	matrix[user_src][user_src] = 0;	
 	iArr_distance[user_src] = 0;
-	visited[user_src] = 'T';
+	visited[user_src][user_src] = 'T';
 	
 	path_struct* path_node = NULL;
 	//path_struct* tmp_node = NULL;
@@ -123,7 +131,9 @@ int main(int arc, char * argv [])
 		neighbor_node = NULL;
 		for(dest = 0; dest < NODE_COUNT; dest++)
 		{
-			if((matrix[source][dest] != INF) && (visited[dest] == 'F'))
+			//if(source == 7 && dest == 6)
+			//		raise(SIGTRAP);
+			if((matrix[source][dest] != INF) && (visited[source][dest] == 'F'))
 			{	
 				step = matrix[source][dest] + iArr_distance[source];
 				//update_bool = 'T';
@@ -131,7 +141,7 @@ int main(int arc, char * argv [])
 				{
 					update_bool = 'T';
 					neighbor_node = malloc(sizeof(neighbor_struct));
-					neighbor_node->i = dest;
+					neighbor_node->i = up_dest = dest;
 					//neighbor_node->distance = step;
 					TAILQ_INSERT_TAIL(&neighbor_head, neighbor_node, neighbors);
 					
@@ -159,7 +169,7 @@ int main(int arc, char * argv [])
 					//visited[dest] = 'T';
 			}		
 		}
-		visited[source] = 'T';
+		visited[source][up_dest] = 'T';
 		if(update_bool == 'T')
 		{
 			neighbor_node = TAILQ_FIRST(&neighbor_head);
