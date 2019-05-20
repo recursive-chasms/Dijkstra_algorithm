@@ -215,6 +215,22 @@ Finish:
 	return 0;
 }
 
+/*
+Note: Actual route from 1 to 6:
+
+1 -> 4 -> 7 -> 6
+
+Supposed route: 
+7 -> 6 
+3 -> 5 
+4 -> 5 
+2 -> 4 
+1 -> 2 
+
+The nodes of the actual route exist in the output. Need to find a means of eliminating the redundant ones. Probably won't be very efficient. Will probably help to refactor the linked lists into arrays. 
+
+
+*/
 
 
 
