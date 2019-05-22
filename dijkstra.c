@@ -136,32 +136,58 @@ int main(int arc, char * argv [])
 			if((matrix[source][dest] != INF) && (visited[source][dest] == 'F'))
 			{	
 				step = matrix[source][dest] + iArr_distance[source];
+				//update_bool = 'T';
 				if(step <= iArr_distance[dest])
 				{
 					update_bool = 'T';
 					neighbor_node = malloc(sizeof(neighbor_struct));
 					neighbor_node->i = up_dest = dest;
+					//neighbor_node->distance = step;
 					TAILQ_INSERT_TAIL(&neighbor_head, neighbor_node, neighbors);
-
+					
+					//final_dest = dest;
+					//final_distance = step;
+					
+					/*
+					if(iArr_distance[dest] == INF || iArr_distance[dest] == 0)
+					{
+						//path_node = malloc(sizeof(path_struct));
+						path_node->src = source;
+						path_node->dst = dest;
+						TAILQ_INSERT_TAIL(&path_head, path_node, path_vertices);
+					}
+					else
+					{
+						path_node = TAILQ_LAST(&path_head, stailhead_p);
+						path_node->src = source;
+						path_node->dst = dest;		
+					}
+					*/
 					iArr_distance[dest] = step;					
+					//enq_main(dest);
 				}				
+					//visited[dest] = 'T';
 			}		
 		}
 		visited[source][up_dest] = 'T';
 		if(update_bool == 'T')
 		{
 			neighbor_node = TAILQ_FIRST(&neighbor_head);
-
-			path_node = malloc(sizeof(path_struct));
-			path_node->src = source;
-			path_node->dst = neighbor_node->i;
-				
-			TAILQ_INSERT_TAIL(&path_head, path_node, path_vertices);
+			//if(matrix[source][neighbor_node->i] != INF)
+			//{
+				path_node = malloc(sizeof(path_struct));
+				path_node->src = source;
+				path_node->dst = neighbor_node->i;
+				//path_node->distance = neighbor_node->distance;
+				TAILQ_INSERT_TAIL(&path_head, path_node, path_vertices);
+			//}
 			
 			neighbor_node = NULL;
 			path_node = NULL;
 			update_bool = 'F';
 		}
+		//iArr_distance[vertex.dst] += temp_distance;
+		//enq_path(vertex);
 	}
 	
 	printf("Distances from starting point to every node:\n");
