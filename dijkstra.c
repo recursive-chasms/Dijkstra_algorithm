@@ -125,18 +125,30 @@ int main(int argc, char * argv [])
 	{	
 		index = 0;	
 		neighbor_node = TAILQ_FIRST(&neighbor_head);
+		if(source == 4)
+			raise(SIGTRAP);
 		TAILQ_REMOVE(&neighbor_head, neighbor_node, neighbors);
 		source = neighbor_node->i;
+		
 		free(neighbor_node);
+		if(source == 4)
+			raise(SIGTRAP);
 		neighbor_node = NULL;
 		for(dest = 0; dest < NODE_COUNT; dest++)
 		{
 			if((matrix[source][dest] != INF) && (visited[source][dest] == 'F'))
 			{	
 				step = matrix[source][dest] + iArr_distance[source].distance;
+				//if(iArr_distance[source].stack[0] == 4)
+				//	raise(SIGTRAP);
+				
 				if(step <= iArr_distance[dest].distance)
 				{
 					//Copy the source predecessor stack to the dest predecessor stack
+					
+					//if(source == 4)
+					//	raise(SIGTRAP);
+					
 					stacktop = iArr_distance[source].index;
 					for(index = 0; index < stacktop; index++)
 						iArr_distance[dest].stack[index] = iArr_distance[source].stack[index];		
@@ -225,6 +237,8 @@ Once shortest distances are finalized, just choose the shortest path at each con
 Each point in iArr_distance needs to contain a stack of predecessor nodes/distances in addition to the total distance. Every update is not only going to add to the distance. It's also going to involve removing at least one value from the stack. 
 
 Actually, each update for the stack is going to involve copying over the entire predecessor stack. Look at the update for the distance of node 5: It goes from 12 to 3, and the entire stack is replaced. 
+
+I seem to be running into some kind of undefined behavior once source == 4. This seems to happen as soon as it's dequeued. Probably some sort of memory error that's overwriting iArr_distance[4].stack[0]. Hopefully refactoring to an array-based stack (as opposed to depending on this hideous BSD macro) will take care of the problem.
 */
 
 
