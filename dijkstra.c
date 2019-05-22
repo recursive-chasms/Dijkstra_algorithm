@@ -136,58 +136,32 @@ int main(int arc, char * argv [])
 			if((matrix[source][dest] != INF) && (visited[source][dest] == 'F'))
 			{	
 				step = matrix[source][dest] + iArr_distance[source];
-				//update_bool = 'T';
 				if(step <= iArr_distance[dest])
 				{
 					update_bool = 'T';
 					neighbor_node = malloc(sizeof(neighbor_struct));
 					neighbor_node->i = up_dest = dest;
-					//neighbor_node->distance = step;
 					TAILQ_INSERT_TAIL(&neighbor_head, neighbor_node, neighbors);
-					
-					//final_dest = dest;
-					//final_distance = step;
-					
-					/*
-					if(iArr_distance[dest] == INF || iArr_distance[dest] == 0)
-					{
-						//path_node = malloc(sizeof(path_struct));
-						path_node->src = source;
-						path_node->dst = dest;
-						TAILQ_INSERT_TAIL(&path_head, path_node, path_vertices);
-					}
-					else
-					{
-						path_node = TAILQ_LAST(&path_head, stailhead_p);
-						path_node->src = source;
-						path_node->dst = dest;		
-					}
-					*/
+
 					iArr_distance[dest] = step;					
-					//enq_main(dest);
 				}				
-					//visited[dest] = 'T';
 			}		
 		}
 		visited[source][up_dest] = 'T';
 		if(update_bool == 'T')
 		{
 			neighbor_node = TAILQ_FIRST(&neighbor_head);
-			//if(matrix[source][neighbor_node->i] != INF)
-			//{
-				path_node = malloc(sizeof(path_struct));
-				path_node->src = source;
-				path_node->dst = neighbor_node->i;
-				//path_node->distance = neighbor_node->distance;
-				TAILQ_INSERT_TAIL(&path_head, path_node, path_vertices);
-			//}
+
+			path_node = malloc(sizeof(path_struct));
+			path_node->src = source;
+			path_node->dst = neighbor_node->i;
+				
+			TAILQ_INSERT_TAIL(&path_head, path_node, path_vertices);
 			
 			neighbor_node = NULL;
 			path_node = NULL;
 			update_bool = 'F';
 		}
-		//iArr_distance[vertex.dst] += temp_distance;
-		//enq_path(vertex);
 	}
 	
 	printf("Distances from starting point to every node:\n");
@@ -227,9 +201,13 @@ Supposed route:
 2 -> 4 
 1 -> 2 
 
-The nodes of the actual route exist in the output. Need to find a means of eliminating the redundant ones. Probably won't be very efficient. Will probably help to refactor the linked lists into arrays. 
+The nodes of the actual route exist in the output. Need to find a means of eliminating the redundant ones. Probably won't be very efficient. May help to refactor the linked lists into arrays. Maybe just removing the macros will be better, though, since it'll be easier to remove nodes. Or maybe just don't print the indices that have been blanked out. In any case, it'll probably necessitate iterating through the whole path at every turn.
 
+Once shortest distances are finalized, just choose the shortest path at each connected node. Simple. (I think.) This is something that's done after the initial sequence--not during.
 
+Each point in iArr_distance needs to contain a stack of predecessor nodes/distances in addition to the total distance. Every update is not only going to add to the distance. It's also going to involve removing at least one value from the stack. 
+
+Actually, each update for the stack is going to involve copying over the entire predecessor stack. Look at the update for the distance of node 5: It goes from 12 to 3, and the entire stack is replaced. 
 */
 
 
