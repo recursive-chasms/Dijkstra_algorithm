@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/queue.h>
+#include <string.h>
 #include <signal.h>
 
 #define NODE_COUNT 8  /*<-Increased to represent actual graph*/
@@ -8,7 +9,9 @@
 #define INF 0x7FFFFFFF
 #define MAX_RECON_STACK 20
 #define MAX_QUEUE 50
+#define INPUT_SIZE 10
 #define CENTER 25
+#define NUMERIC_OFFSET 48
 
 struct path_struct
 {
@@ -39,7 +42,7 @@ int main(int argc, char * argv [])
 	int matrix[NODE_COUNT][NODE_COUNT];
 	char visited[NODE_COUNT][NODE_COUNT];
 	FILE* ptr;
-	char int_string[10];
+	char int_string[INPUT_SIZE];
 	
 	int queue[MAX_QUEUE];
 	//TAILQ_HEAD(stailhead, neighbor_struct) neighbor_head = TAILQ_HEAD_INITIALIZER(neighbor_head);
@@ -110,9 +113,23 @@ int main(int argc, char * argv [])
 	dest = 0;
 	weight = 0;	
 	
+	//strncpy(int_string, argv[1], INPUT_SIZE);
 	
-	user_src = 1;//atoi(argv[0]) -1;/*adjusting for actual numeric index*/
-	user_dst = 6;//atoi(argv[2]) -1;
+	//printf("String: %s\n", int_string);
+	
+	//user_src = (int)argv[1] - NUMERIC_OFFSET;
+	//user_dst = (int)int_string[2] - NUMERIC_OFFSET;
+	
+	if(!argv[1] || !argv[2])
+	{
+		puts("Required usage: ./a.out [source] [destination]\n");
+		exit(0);
+	}
+	
+	user_src = atoi(argv[1]);
+	user_dst = atoi(argv[2]);
+	
+	//printf("Source: %i\nDest: %i\n", user_src, user_dst);
 	
 	//Initializations for first node.
 	matrix[user_src][user_src] = 0;	
@@ -184,13 +201,21 @@ int main(int argc, char * argv [])
 	printf("Distances from starting point to every node:\n");
 	
 	for(index = 0; index < NODE_COUNT; index++)
-		printf("%i -> %i | %i\n", user_src, index, iArr_distance[index].distance);
+	{
+		if(iArr_distance[index].distance != INF)
+			printf("%i -> %i | %i\n", user_src, index, iArr_distance[index].distance);
+	}
 	
 	puts("\nACTUAL ROUTE:");
 	curr_tmp = iArr_distance[user_dst].stack;
 	path_top = iArr_distance[user_dst].index;
 	for(index = 0; index <= path_top; index++)
-		printf("%i -> ", curr_tmp[index]);
+	{
+		//if(curr_tmp[index] != INF)
+			printf("%i ", curr_tmp[index]);
+		if(index < path_top)
+			printf("-> ");
+	}
 	putchar('\n');
 
 Finish:
