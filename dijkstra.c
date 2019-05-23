@@ -60,7 +60,7 @@ int main(int argc, char * argv [])
 
 	int weight = 0;
 	int step = 0;
-	char update_bool = 'F';
+	int update_bool = 0;
 	
 	predecessor iArr_distance[NODE_COUNT];
 	//predecessor prev_tmp;
@@ -80,8 +80,8 @@ int main(int argc, char * argv [])
 		}
 	}
 	
-	//for(index = 0; index < MAX_QUEUE; index++)
-	//	queue[index] = -1;
+	for(index = 0; index < MAX_QUEUE; index++)
+		queue[index] = -1;
 	
 	int user_src = 0;
 	int user_dst = 0;
@@ -117,7 +117,7 @@ int main(int argc, char * argv [])
 	//Initializations for first node.
 	matrix[user_src][user_src] = 0;	
 	iArr_distance[user_src].distance = 0;
-	for(index = 0; index < MAX_RECON_STACK; index++)
+	for(index = 0; index < NODE_COUNT; index++)
 		iArr_distance[index].stack[0] = user_src;
 	visited[user_src][user_src] = 'T';
 	
@@ -136,7 +136,7 @@ int main(int argc, char * argv [])
 	{	
 		index = 0;	
 		source = queue[head];
-		//queue[head] = -1;
+		queue[head] = -1;
 		if(head < MAX_QUEUE) head++;
 		else { puts("ERROR: Queue overflow.\n"); exit(1); }
 		//if(source == 4)
@@ -153,32 +153,27 @@ int main(int argc, char * argv [])
 			if((matrix[source][dest] != INF) && (visited[source][dest] == 'F'))
 			{	
 				step = matrix[source][dest] + iArr_distance[source].distance;
-				//if(iArr_distance[source].stack[0] == 4)
-				//	raise(SIGTRAP);
 				
 				if(step <= iArr_distance[dest].distance)
 				{
 					//Copy the source predecessor stack to the dest predecessor stack
 					
-					//if(source == 4)
-					//	raise(SIGTRAP);
-					
 					path_top = iArr_distance[source].index;
-					for(index = 0; index < path_top; index++)
-						iArr_distance[dest].stack[index] = iArr_distance[source].stack[index];		
-					
-					update_bool = 'T';
-					neighbor_node = malloc(sizeof(neighbor_struct));
-					/*neighbor_node->i = */
-					up_dest = dest, queue[tail] = dest;
-					if(tail < MAX_QUEUE) tail++;
-					else { puts("ERROR: Queue overflow.\n"); exit(1); }
-					//TAILQ_INSERT_TAIL(&neighbor_head, neighbor_node, neighbors);
-					
+
+					for(index = 0; index <= path_top; index++)
+					{
+						iArr_distance[dest].stack[index] = iArr_distance[source].stack[index];	
+						update_bool = 1;
+					}	
 					iArr_distance[dest].distance = step;
-					iArr_distance[dest].stack[path_top] = dest;
 					path_top++;
-					iArr_distance[dest].index = path_top;					
+					iArr_distance[dest].stack[path_top] = dest;
+					iArr_distance[dest].index = path_top;
+
+					up_dest = dest;
+					queue[tail] = dest;
+					if(tail < MAX_QUEUE) tail++;
+					else { puts("ERROR: Queue overflow.\n"); exit(1); }				
 				}				
 			}		
 		}
@@ -194,7 +189,7 @@ int main(int argc, char * argv [])
 	puts("\nACTUAL ROUTE:");
 	curr_tmp = iArr_distance[user_dst].stack;
 	path_top = iArr_distance[user_dst].index;
-	for(index = 0; index < path_top; index++)
+	for(index = 0; index <= path_top; index++)
 		printf("%i -> ", curr_tmp[index]);
 	putchar('\n');
 
