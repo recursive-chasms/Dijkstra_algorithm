@@ -6,7 +6,9 @@
 #define NODE_COUNT 8  /*<-Increased to represent actual graph*/
 #define EDGE_COUNT 12
 #define INF 0x7FFFFFFF
-#define MAX_NODES 20
+#define MAX_RECON_STACK 20
+#define MAX_QUEUE 50
+#define CENTER 25
 
 struct path_struct
 {
@@ -20,7 +22,7 @@ struct recon
 {
 	int distance;
 	int index;
-	int stack[MAX_NODES];
+	int stack[MAX_RECON_STACK];
 };
 typedef struct recon predecessor;
 
@@ -39,15 +41,18 @@ int main(int argc, char * argv [])
 	FILE* ptr;
 	char int_string[10];
 	
-	TAILQ_HEAD(stailhead, neighbor_struct) neighbor_head = TAILQ_HEAD_INITIALIZER(neighbor_head);
-	TAILQ_HEAD(stailhead_p, path_struct) path_head = TAILQ_HEAD_INITIALIZER(path_head);
+	int queue[MAX_QUEUE];
+	//TAILQ_HEAD(stailhead, neighbor_struct) neighbor_head = TAILQ_HEAD_INITIALIZER(neighbor_head);
+	//TAILQ_HEAD(stailhead_p, path_struct) path_head = TAILQ_HEAD_INITIALIZER(path_head);
 	
-	TAILQ_INIT(&neighbor_head);
-	TAILQ_INIT(&path_head);
+	//TAILQ_INIT(&neighbor_head);
+	//TAILQ_INIT(&path_head);
 	
 	int index = 0;
 	int bindex = 0;
-	int stacktop = 0;
+	int path_top = 0;
+	int head = 0;
+	int tail = 0;
 	int previous = 0;
 	int source = 0;
 	int dest = 0;
@@ -65,7 +70,7 @@ int main(int argc, char * argv [])
 	{
 		iArr_distance[index].distance = INF;
 		iArr_distance[index].index = 0;
-		for(bindex = 0; bindex < MAX_NODES; bindex++)
+		for(bindex = 0; bindex < MAX_RECON_STACK; bindex++)
 			iArr_distance[index].stack[bindex] = 0;
 			
 		for(bindex = 0; bindex < NODE_COUNT; bindex++)
@@ -74,6 +79,9 @@ int main(int argc, char * argv [])
 			visited[index][bindex] = 'F';
 		}
 	}
+	
+	//for(index = 0; index < MAX_QUEUE; index++)
+	//	queue[index] = -1;
 	
 	int user_src = 0;
 	int user_dst = 0;
@@ -109,31 +117,37 @@ int main(int argc, char * argv [])
 	//Initializations for first node.
 	matrix[user_src][user_src] = 0;	
 	iArr_distance[user_src].distance = 0;
-	for(index = 0; index < MAX_NODES; index++)
+	for(index = 0; index < MAX_RECON_STACK; index++)
 		iArr_distance[index].stack[0] = user_src;
 	visited[user_src][user_src] = 'T';
 	
-	path_struct* path_node = NULL;
+	//path_struct* path_node = NULL;
 
-	neighbor_struct* neighbor_node = NULL;
-	neighbor_node = malloc(sizeof(neighbor_struct));
-	neighbor_node->i = user_src;
-	TAILQ_INSERT_HEAD(&neighbor_head, neighbor_node, neighbors);
+	//neighbor_struct* neighbor_node = NULL;
+	//neighbor_node = malloc(sizeof(neighbor_struct));
+	//neighbor_node->i = user_src;
+	//TAILQ_INSERT_HEAD(&neighbor_head, neighbor_node, neighbors);
+
+	tail++;
+	queue[0] = user_src;
 
 	/*Not worrying about catching invalid user input right now.*/
-	while(!TAILQ_EMPTY(&neighbor_head))/*Visiting neighbors*/
+	while(head != tail)/*Visiting neighbors*/
 	{	
 		index = 0;	
-		neighbor_node = TAILQ_FIRST(&neighbor_head);
-		if(source == 4)
-			raise(SIGTRAP);
-		TAILQ_REMOVE(&neighbor_head, neighbor_node, neighbors);
-		source = neighbor_node->i;
+		source = queue[head];
+		//queue[head] = -1;
+		if(head < MAX_QUEUE) head++;
+		else { puts("ERROR: Queue overflow.\n"); exit(1); }
+		//if(source == 4)
+		//	raise(SIGTRAP);
+		//TAILQ_REMOVE(&neighbor_head, neighbor_node, neighbors);
+		//source = neighbor_node->i;
 		
-		free(neighbor_node);
-		if(source == 4)
-			raise(SIGTRAP);
-		neighbor_node = NULL;
+		//free(neighbor_node);
+		//if(source == 4)
+		//	raise(SIGTRAP);
+		//neighbor_node = NULL;
 		for(dest = 0; dest < NODE_COUNT; dest++)
 		{
 			if((matrix[source][dest] != INF) && (visited[source][dest] == 'F'))
@@ -149,39 +163,27 @@ int main(int argc, char * argv [])
 					//if(source == 4)
 					//	raise(SIGTRAP);
 					
-					stacktop = iArr_distance[source].index;
-					for(index = 0; index < stacktop; index++)
+					path_top = iArr_distance[source].index;
+					for(index = 0; index < path_top; index++)
 						iArr_distance[dest].stack[index] = iArr_distance[source].stack[index];		
 					
 					update_bool = 'T';
 					neighbor_node = malloc(sizeof(neighbor_struct));
-					neighbor_node->i = up_dest = dest;
-					TAILQ_INSERT_TAIL(&neighbor_head, neighbor_node, neighbors);
+					/*neighbor_node->i = */
+					up_dest = dest, queue[tail] = dest;
+					if(tail < MAX_QUEUE) tail++;
+					else { puts("ERROR: Queue overflow.\n"); exit(1); }
+					//TAILQ_INSERT_TAIL(&neighbor_head, neighbor_node, neighbors);
 					
 					iArr_distance[dest].distance = step;
-					iArr_distance[dest].stack[stacktop] = dest;
-					stacktop++;
-					iArr_distance[dest].index = stacktop;					
+					iArr_distance[dest].stack[path_top] = dest;
+					path_top++;
+					iArr_distance[dest].index = path_top;					
 				}				
 			}		
 		}
 		visited[source][up_dest] = 'T';
-		/*
-		if(update_bool == 'T')
-		{
-			neighbor_node = TAILQ_FIRST(&neighbor_head);
 
-			path_node = malloc(sizeof(path_struct));
-			path_node->src = source;
-			path_node->dst = neighbor_node->i;
-
-			TAILQ_INSERT_TAIL(&path_head, path_node, path_vertices);
-			
-			neighbor_node = NULL;
-			path_node = NULL;
-			update_bool = 'F';
-		}
-		*/
 	}
 	
 	printf("Distances from starting point to every node:\n");
@@ -189,26 +191,10 @@ int main(int argc, char * argv [])
 	for(index = 0; index < NODE_COUNT; index++)
 		printf("%i -> %i | %i\n", user_src, index, iArr_distance[index].distance);
 	
-	/*
-	printf("ROUTE--Start to finish: \n");
-	
-	path_node = TAILQ_FIRST(&path_head);
-	
-	while(!TAILQ_EMPTY(&path_head))
-	{
-		TAILQ_FOREACH_REVERSE(path_node, &path_head, stailhead_p, path_vertices)
-		{
-			printf("%i -> %i \n", path_node->src, path_node->dst);
-			TAILQ_REMOVE(&path_head, path_node, path_vertices);
-			free(path_node);
-		}	
-	}
-	*/
-	
 	puts("\nACTUAL ROUTE:");
 	curr_tmp = iArr_distance[user_dst].stack;
-	stacktop = iArr_distance[user_dst].index;
-	for(index = 0; index < stacktop; index++)
+	path_top = iArr_distance[user_dst].index;
+	for(index = 0; index < path_top; index++)
 		printf("%i -> ", curr_tmp[index]);
 	putchar('\n');
 
@@ -219,21 +205,6 @@ Finish:
 }
 
 /*
-Note: Actual route from 1 to 6:
-
-1 -> 4 -> 7 -> 6
-
-Supposed route: 
-7 -> 6 
-3 -> 5 
-4 -> 5 
-2 -> 4 
-1 -> 2 
-
-The nodes of the actual route exist in the output. Need to find a means of eliminating the redundant ones. Probably won't be very efficient. May help to refactor the linked lists into arrays. Maybe just removing the macros will be better, though, since it'll be easier to remove nodes. Or maybe just don't print the indices that have been blanked out. In any case, it'll probably necessitate iterating through the whole path at every turn.
-
-Once shortest distances are finalized, just choose the shortest path at each connected node. Simple. (I think.) This is something that's done after the initial sequence--not during.
-
 Each point in iArr_distance needs to contain a stack of predecessor nodes/distances in addition to the total distance. Every update is not only going to add to the distance. It's also going to involve removing at least one value from the stack. 
 
 Actually, each update for the stack is going to involve copying over the entire predecessor stack. Look at the update for the distance of node 5: It goes from 12 to 3, and the entire stack is replaced. 
