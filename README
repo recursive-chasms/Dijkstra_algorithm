@@ -1,1 +1,13 @@
 Dijkstra algorithm by Peter Carle
+
+Detailed documentation may be found within the inline comments.
+
+build/test instructions:
+
+1. compile dijkstra.c (no makefile needed for this one)
+
+2. make sure input.txt is located in the same directory
+
+3. ./a.out [source] [destination] 
+
+Note: As currently defined, the source and destination nodes should be integers between 1 and 7. The program prints out the shortest distances from the starting point to every other reachable point. It also prints out the shortest path from the starting point to the destination. 
