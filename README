@@ -12,7 +12,5 @@ build/test instructions:
 
 Note: As currently defined, the source and destination nodes should be integers between 1 and 7. The program prints out the shortest distances from the starting point to every other reachable point. It also prints out the shortest path from the starting point to the destination. 
 
-A visual representation of the graph associated with input.txt
-is shown in visual_graph.txt. A representation of the process
-of finding the array of distances for source: 1 and dest: 6
-is shown in logical_dry_run.txt. 
+A visual representation of the graph associated with input.txt is shown in visual_graph.txt. A representation of the process of finding the array of distances for source: 1 and dest: 6 is shown in logical_dry_run.txt. 
+
