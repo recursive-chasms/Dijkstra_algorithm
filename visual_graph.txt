@@ -1,0 +1,18 @@
+Visual representation of the graph associated with input.txt,
+with source nodes on the y axis and destination nodes on the x 
+axis. The weights/distances are shone in the body of the graph.
+
+Thus, the distance from 1 to 2 is 2, while the distance from 1 
+to 4 is just 1. It is a massive hike from 2 to 5. And, somehow, 
+you can't get from 5 back to 2. There's no going back. (I.e., 
+it's a directed graph.) 
+
+0 1 2 3 4 5 6 7
+1   2   1
+2       3 10
+3 4         5
+4     2   2 8 4
+5             6
+6
+7           1
+

@@ -6,18 +6,31 @@
 /*
 This is my most current implementation of Dijkstra's algorithm.
 
-It is essentially a bare-bones navigation program which finds the shortest distances between the starting point and the rest of the points on the map. It also finds the specific shortest path from the starting point to the destination point. 
+It is essentially a bare-bones navigation program which
+finds the shortest distances between the starting point
+and the rest of the points on the map. It also finds the
+specific shortest path from the starting point to the
+destination point. 
 
 In computer science terms:
 
--- "graph" means "map" (...within this context. In reality, a graph data structure can represent many kinds of relationships--not just physical distances.)
+-- "graph" means "map" (...within this context. In
+reality, a graph data structure can represent many kind 
+of relationships--not just physical distances.)
 -- "node" means "point/location on the map"
 
-I originally wrote a C++ version for one of the later assignments in my Data Structures class in Fall of 2017. It wasn't that great. So in preparation for an interview earlier this year, I started rewriting it from scratch. 
+I originally wrote a C++ version for one of the later
+assignments in my Data Structures class in Fall of 2017.
+It wasn't that great. So in preparation for an interview
+earlier this year, I started rewriting it from scratch. 
 
-This version came out much better than the 2017 version. Since finding the shortest path within a graph is a fundamental computing task, I saw fit to include it in my public portfolio. 
+This version came out much better than the 2017 version.
+Since finding the shortest path within a graph is a
+fundamental computing task, I saw fit to include it in my
+public portfolio. 
 
-More detailed documentation may be found within the inline comments, especially starting at line 147.
+More detailed documentation may be found within the inline
+comments, especially starting at line 147.
 
 § Peter Carle §
 May 28th, 2019
@@ -88,7 +101,10 @@ int main(int argc, char * argv [])
 		}
 	}
 
-	/*Full disclosure: input.txt happens to be the same input file as the one originally provided by my Data Structures professor in 2017. I needed a reference point to easily verify correctness during testing.*/
+	/*Full disclosure: input.txt happens to be the same input
+	file as the one originally provided by my Data Structures
+	professor in 2017. I needed a reference point to easily
+	verify correctness during testing.*/
 
 	ptr = fopen("input.txt", "r");
 	
@@ -124,7 +140,8 @@ int main(int argc, char * argv [])
 		exit(0);
 	}
 	
-	/*Input validation handled primarily by atoi() in this simple application.*/
+	/*Input validation handled primarily by atoi() in this
+	simple application.*/
 	user_src = atoi(argv[1]);
 	user_dst = atoi(argv[2]);
 	
@@ -146,11 +163,23 @@ int main(int argc, char * argv [])
 	queue[0] = user_src;
 	
 	/*
-	Dijkstra's algorithm finds the set of shortest distances from the starting node to every other reachable node on the graph. This implementation of it also prints out the list of actual nodes visited for the shortest path from the source node to the destination node. 
+	Dijkstra's algorithm finds the set of shortest distances
+	from the starting node to every other reachable node on the
+	graph. This implementation of it also prints out the list
+	of actual nodes visited for the shortest path from the
+	source node to the destination node. 
 	
-	While the algorithm is effective at finding the shortest distance from the starting point to the ending point, it can also be inefficient. If my understanding is correct, the introduction of a heuristic to Dijkstra's algorithm turns it into the potentially much faster A* algorithm, which, while not guaranteed to find the *shortest* path, should be able to find a path in a complex graph while retaining reasonable performance. 
+	While the algorithm is effective at finding the shortest
+	distance from the starting point to the ending point, it
+	can also be inefficient. If my understanding is correct,
+	the introduction of a heuristic to Dijkstra's algorithm
+	turns it into the potentially much faster A* algorithm,
+	which, while not guaranteed to find the *shortest* path,
+	should be able to find a path in a complex graph while
+	retaining reasonable performance. 
 	
-	Due to time constraints, I have not implemented the A* algorithm for this project. 
+	Due to time constraints, I have not implemented the A*
+	algorithm for this project. 
 	*/
 	
 	while(head != tail)/*Visiting neighbors.*/
@@ -160,19 +189,32 @@ int main(int argc, char * argv [])
 		if(head < MAX_QUEUE) head++;
 		else { puts("ERROR: Queue overflow."); exit(1); }
 
-		/*Performs a breadth-first search for each node's set of neighbors.*/
+		/*Performs a breadth-first search for each node's set
+		of neighbors.*/
 		for(dest = 0; dest < NODE_COUNT; dest++)
 		{
 			/*Checks whether an unvisited node exists here.*/
 			if(matrix[source][dest] != INF && !visited[source][dest])
 			{	
-				/*step is the prospective distance from the previous node to the current node.*/
+				/*step is the prospective distance from the
+				previous node to the current node.*/
 				step = matrix[source][dest] + distances[source].distance;
 				if(step <= distances[dest].distance) /*UPDATE THE ARRAY OF DISTANCES*/
 				{	/*
-					Each node's index in the distance array has a stack in which each visited node is placed. This stack represents the sequence of nodes visited to get this far.
+					Each node's index in the distance array has
+					a stack in which each visited node is
+					placed. This stack represents the sequence
+					of nodes visited to get this far.
 				 	
-				If the distance has been updated, the entire source predecessor stack is copied to the dest predecessor stack. This is because the source, with its associated distance and predecessor stack, represents the shortest distance found thus far. The preexisting dest predecessor stack may be completely invalid until it's overwritten with the source predecessor stack. 
+					If the distance has been updated, the entire
+					source predecessor stack is copied to the
+					dest predecessor stack. This is because 	
+					the source,	with its associated distance 	
+					and predecessor	stack, represents the 
+					shortest distance found thus far. The 
+					preexisting dest predecessor stack may be 
+					completely invalid until it's overwritten 
+					with the source predecessor stack. 
 					*/
 			
 					path_top = distances[source].index;
