@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 //Peter Carle
 
 /*
@@ -37,29 +34,44 @@ May 28th, 2019
 
 */
 
-#define NODE_COUNT 8 
-#define EDGE_COUNT 12
+#include <stdio.h>
+#include <stdlib.h>
 
-#define INF 0x7FFFFFFF
+enum constants
+{
+	NODE_COUNT = 8, 
+	EDGE_COUNT = 12,
 
-#define MAX_RECON_STACK 20
-#define MAX_QUEUE 50
-#define MAX_NODE 7
-#define MAX_INPUT_LINE 8
-#define MIN_NODE 1
+	INF = 0x7FFFFFFF,
 
-#define INPUT_SIZE 10
+	MAX_RECON_STACK = 20,
+	MAX_QUEUE = 50,
+	MAX_NODE = 7,
+	MAX_INPUT_LINE = 8,
+	MIN_NODE = 1,
 
+	INPUT_SIZE = 10,
+};
+
+/*A data structure used to store both the distance associated
+with a particular node--and the path taken thus far to arrive
+at this node.*/
 struct reconstruct
 {
+	/*The distance traveled thus far.*/
 	int distance;
+	
+	/*Index to the top of the stack.*/
 	int index;
+	
+	/*A stack used to store the path traveled thus far.*/
 	int stack[MAX_RECON_STACK];
 };
 typedef struct reconstruct predecessor;
 
 
-int main(int argc, char * argv [])
+int 
+main(int argc, char * argv [])
 {	
 	int matrix[NODE_COUNT][NODE_COUNT];
 	int visited[NODE_COUNT][NODE_COUNT];	
@@ -87,14 +99,14 @@ int main(int argc, char * argv [])
 	int step = 0;
 	
 	/*Initializing everything to default values.*/
-	for(;index < NODE_COUNT; index++)
+	for (;index < NODE_COUNT; index++)
 	{
 		distances[index].distance = INF;
 		distances[index].index = 0;
-		for(bindex = 0; bindex < MAX_RECON_STACK; bindex++)
+		for (bindex = 0; bindex < MAX_RECON_STACK; bindex++)
 			distances[index].stack[bindex] = 0;
 			
-		for(bindex = 0; bindex < NODE_COUNT; bindex++)
+		for (bindex = 0; bindex < NODE_COUNT; bindex++)
 		{
 			matrix[index][bindex] = INF;
 			visited[index][bindex] = 0;
@@ -108,7 +120,7 @@ int main(int argc, char * argv [])
 
 	ptr = fopen("input.txt", "r");
 	
-	if(!ptr)
+	if (!ptr)
 	{
 		puts("File read failed.");
 		exit(1);
@@ -122,7 +134,7 @@ int main(int argc, char * argv [])
 	column 2: distance/weight
 	*/		
 	
-	for(index = 0; index <= EDGE_COUNT; index++)
+	for (index = 0; index <= EDGE_COUNT; index++)
 	{
 		fgets(int_string, MAX_INPUT_LINE, ptr);
 		
@@ -134,7 +146,7 @@ int main(int argc, char * argv [])
 	}
 	index = source = dest = weight = 0;
 	
-	if(!argv[1] || !argv[2])
+	if (!argv[1] || !argv[2])
 	{
 		puts("Required usage: ./a.out [source] [destination]");
 		exit(0);
@@ -145,7 +157,8 @@ int main(int argc, char * argv [])
 	user_src = atoi(argv[1]);
 	user_dst = atoi(argv[2]);
 	
-	if(user_src > MAX_NODE || user_src < MIN_NODE || user_dst > MAX_NODE || user_dst < MIN_NODE)
+	if (user_src > MAX_NODE || user_src < MIN_NODE
+		 || user_dst > MAX_NODE || user_dst < MIN_NODE)
 	{
 		printf("Currently defined values for source and destination must be between %i and %i.\n", MIN_NODE, MAX_NODE);
 		exit(0);
@@ -154,7 +167,7 @@ int main(int argc, char * argv [])
 	/*Initializations for first node.*/
 	matrix[user_src][user_src] = 0;	
 	distances[user_src].distance = 0;
-	for(index = 0; index < NODE_COUNT; index++)
+	for (index = 0; index < NODE_COUNT; index++)
 		distances[index].stack[0] = user_src;
 	visited[user_src][user_src] = 1;
 	
@@ -182,24 +195,24 @@ int main(int argc, char * argv [])
 	algorithm for this project. 
 	*/
 	
-	while(head != tail)/*Visiting neighbors.*/
+	while (head != tail)/*Visiting neighbors.*/
 	{	
 		index = 0;	
 		source = queue[head];
-		if(head < MAX_QUEUE) head++;
+		if (head < MAX_QUEUE) head++;
 		else { puts("ERROR: Queue overflow."); exit(1); }
 
 		/*Performs a breadth-first search for each node's set
 		of neighbors.*/
-		for(dest = 0; dest < NODE_COUNT; dest++)
+		for (dest = 0; dest < NODE_COUNT; dest++)
 		{
 			/*Checks whether an unvisited node exists here.*/
-			if(matrix[source][dest] != INF && !visited[source][dest])
+			if (matrix[source][dest] != INF && !visited[source][dest])
 			{	
 				/*step is the prospective distance from the
 				previous node to the current node.*/
 				step = matrix[source][dest] + distances[source].distance;
-				if(step <= distances[dest].distance) /*UPDATE THE ARRAY OF DISTANCES*/
+				if (step <= distances[dest].distance) /*UPDATE THE ARRAY OF DISTANCES*/
 				{	/*
 					Each node's index in the distance array has
 					a stack in which each visited node is
@@ -218,7 +231,7 @@ int main(int argc, char * argv [])
 					*/
 			
 					path_top = distances[source].index;
-					for(index = 0; index <= path_top; index++)
+					for (index = 0; index <= path_top; index++)
 						distances[dest].stack[index] = distances[source].stack[index];		
 					distances[dest].distance = step;
 					path_top++;
@@ -227,7 +240,7 @@ int main(int argc, char * argv [])
 
 					updest = dest;
 					queue[tail] = dest;
-					if(tail < MAX_QUEUE) tail++;
+					if (tail < MAX_QUEUE) tail++;
 					else { puts("ERROR: Queue overflow."); exit(1); }				
 				}				
 			}		
@@ -237,24 +250,24 @@ int main(int argc, char * argv [])
 	
 	puts("\nDistances from starting point to every node:");
 	
-	for(index = 0; index < NODE_COUNT; index++)
+	for (index = 0; index < NODE_COUNT; index++)
 	{
-		if(distances[index].distance != INF)
+		if (distances[index].distance != INF)
 			printf("%i -> %i | %i\n", user_src, index, distances[index].distance);
 	}
 	
 	puts("\nACTUAL ROUTE:");
 	curr_tmp = distances[user_dst].stack;
 	path_top = distances[user_dst].index;
-	for(index = 0; index <= path_top; index++)
+	for (index = 0; index <= path_top; index++)
 	{
 		printf("%i ", curr_tmp[index]);
-		if(index < path_top)
+		if (index < path_top)
 			printf("-> ");
 	}
 	putchar('\n');
 
-	if(ptr) fclose(ptr);
+	if (ptr) fclose(ptr);
 	ptr = NULL;
 
 	return 0;
